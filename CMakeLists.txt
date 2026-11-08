@@ -24,6 +24,32 @@ project(mygame)
 # Add libraries here
 # ************************
 
+# raylib is vendored inside thirdparty/raylib. If it isn't there yet, it is
+# cloned from GitHub during the first CMake configure and built along with the
+# project, so no system-wide installation is required.
+set(RAYLIB_VERSION "5.5" CACHE STRING "raylib version used when fetching")
+set(RAYLIB_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/raylib")
+
+# Only build the raylib library itself, not its examples or games.
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
+
+if(EXISTS "${RAYLIB_SOURCE_DIR}/CMakeLists.txt")
+	message(STATUS "raylib found at ${RAYLIB_SOURCE_DIR}")
+	add_subdirectory("${RAYLIB_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/thirdparty/raylib" EXCLUDE_FROM_ALL)
+else()
+	message(STATUS "raylib not found in thirdparty, fetching version ${RAYLIB_VERSION}...")
+	include(FetchContent)
+	FetchContent_Declare(
+		raylib
+		GIT_REPOSITORY https://github.com/raysan5/raylib.git
+		GIT_TAG ${RAYLIB_VERSION}
+		GIT_SHALLOW TRUE
+		SOURCE_DIR "${RAYLIB_SOURCE_DIR}"
+	)
+	FetchContent_MakeAvailable(raylib)
+endif()
+
 
 # MY_SOURCES is defined to be a list of all the source files for my game 
 # DON'T ADD THE SOURCES BY HAND, they are already added with this macro
@@ -48,6 +74,9 @@ else()
 endif()
 
 target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${MY_SOURCES} )
+
+# Link raylib (fetched or vendored above)
+target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE raylib)
 
 
 if(MSVC) # If using the VS compiler...

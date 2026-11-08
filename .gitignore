@@ -2,6 +2,9 @@
 bin/
 build/
 
+# Vendored dependencies fetched by CMake
+/thirdparty/raylib/
+
 /.vs
 .idea/
 CMakeSettings.json
