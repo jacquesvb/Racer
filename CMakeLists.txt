@@ -30,6 +30,13 @@ project(mygame)
 set(RAYLIB_VERSION "5.5" CACHE STRING "raylib version used when fetching")
 set(RAYLIB_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/raylib")
 
+# Make sure the thirdparty folder exists before checking for raylib inside it.
+set(THIRDPARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty")
+if(NOT EXISTS "${THIRDPARTY_DIR}")
+	message(STATUS "thirdparty folder not found, creating ${THIRDPARTY_DIR}")
+	file(MAKE_DIRECTORY "${THIRDPARTY_DIR}")
+endif()
+
 # Only build the raylib library itself, not its examples or games.
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
